@@ -2,7 +2,7 @@
 #include "RB.h"
 
 
-void rotacao_esquerda(arvore *T, no *x) {
+void rotacao_esquerdaRB(arvore *T, no *x) {
     no *y = x->dir;
     x->dir = y->esq;
     if (y->esq != NULL) {
@@ -20,7 +20,7 @@ void rotacao_esquerda(arvore *T, no *x) {
     x->pai = y;
 }
 
-void rotacao_direita(arvore *T, no *x) {
+void rotacao_direitaRB(arvore *T, no *x) {
     no *y = x->esq;
     x->esq = y->dir;
     if (y->dir != NULL) {
@@ -40,17 +40,17 @@ void rotacao_direita(arvore *T, no *x) {
 
 
 
-void inserir(arvore *T, int a) {
+void inserirRB(arvore *T, int a) {
     no *y = NULL;
     no *x = T->raiz;
     no *z = (no*)malloc(sizeof(no));
-    z->chave = a;
+    z->estado = a;
     z->esq = NULL;
     z->dir = NULL;
     z->cor = 1;
     while (x != NULL) {
         y = x;
-        if (z->chave < x->chave) {
+        if (strcmp(z->estado , x->estado)<0) {
             x = x->esq;
         } else {
             x = x->dir;
@@ -59,16 +59,16 @@ void inserir(arvore *T, int a) {
     z->pai = y;
     if (y == NULL) {
         T->raiz = z;
-    } else if (z->chave < y->chave) {
+    } else if (strcmp(z->estado , y->estado)<0) {
         y->esq = z;
     } else {
         y->dir = z;
     }
     
-    inserir_corrigir(T, z);
+    inserirRB_corrigir(T, z);
 }
 
-void inserir_corrigir(arvore *T, no *z) {
+void inserirRB_corrigir(arvore *T, no *z) {
     while (z->pai != NULL && z->pai->cor == 1) {
         if (z->pai == z->pai->pai->esq) {
             no *y = z->pai->pai->dir;
@@ -80,11 +80,11 @@ void inserir_corrigir(arvore *T, no *z) {
             } else {
                 if (z == z->pai->dir) {
                     z = z->pai;
-                    rotacao_esquerda(T, z);
+                    rotacao_esquerdaRB(T, z);
                 }
                 z->pai->cor = 0;
                 z->pai->pai->cor = 1;
-                rotacao_direita(T, z->pai->pai);
+                rotacao_direitaRB(T, z->pai->pai);
             }
         } else {
             no *y = z->pai->pai->esq;
@@ -96,18 +96,18 @@ void inserir_corrigir(arvore *T, no *z) {
             } else {
                 if (z == z->pai->esq) {
                     z = z->pai;
-                    rotacao_direita(T, z);
+                    rotacao_direitaRB(T, z);
                 }
                 z->pai->cor = 0;
                 z->pai->pai->cor = 1;
-                rotacao_esquerda(T, z->pai->pai);
+                rotacao_esquerdaRB(T, z->pai->pai);
             }
         }
     }
     T->raiz->cor = 0;
 }
 
-void transplant(arvore *T, no *u, no *v) {
+void transplantRB(arvore *T, no *u, no *v) {
     if (u->pai == NULL) {
         T->raiz = v;
     } else if (u == u->pai->esq) {
@@ -120,54 +120,54 @@ void transplant(arvore *T, no *u, no *v) {
     }
 }
 
-no *minimo(no *x) {
+no *minimoRB(no *x) {
     while (x->esq != NULL) {
         x = x->esq;
     }
     return x;
 }
 
-void remover(arvore *T, no *z) {
+void removerRB(arvore *T, no *z) {
     no *y = z;
     int y_original_cor = y->cor;
     no *x;
     if (z->esq == NULL) {
         x = z->dir;
-        transplant(T, z, z->dir);
+        transplantRB(T, z, z->dir);
     } else if (z->dir == NULL) {
         x = z->esq;
-        transplant(T, z, z->esq);
+        transplantRB(T, z, z->esq);
     } else {
-        y = minimo(z->dir);
+        y = minimoRB(z->dir);
         y_original_cor = y->cor;
         x = y->dir;
         if (y->pai == z) {
             x->pai = y;
         } else {
-            transplant(T, y, y->dir);
+            transplantRB(T, y, y->dir);
             y->dir = z->dir;
             y->dir->pai = y;
         }
-        transplant(T, z, y);
+        transplantRB(T, z, y);
         y->esq = z->esq;
         y->esq->pai = y;
         y->cor = z->cor;
     }
     if (y_original_cor == 0) {
-        remover_corrigir(T, x);
+        removerRB_corrigir(T, x);
     }
 }
 
 
 
-void remover_corrigir(arvore *T, no *x) {
+void removerRB_corrigir(arvore *T, no *x) {
     while (x != T->raiz && x->cor == 0) {
         if (x == x->pai->esq) {
             no *w = x->pai->dir;
             if (w->cor == 1) {
                 w->cor = 0;
                 x->pai->cor = 1;
-                rotacao_esquerda(T, x->pai);
+                rotacao_esquerdaRB(T, x->pai);
                 w = x->pai->dir;
             }
             if (w->esq->cor == 0 && w->dir->cor == 0) {
@@ -177,13 +177,13 @@ void remover_corrigir(arvore *T, no *x) {
                 if (w->dir->cor == 0) {
                     w->esq->cor = 0;
                     w->cor = 1;
-                    rotacao_direita(T, w);
+                    rotacao_direitaRB(T, w);
                     w = x->pai->dir;
                 }
                 w->cor = x->pai->cor;
                 x->pai->cor = 0;
                 w->dir->cor = 0;
-                rotacao_esquerda(T, x->pai);
+                rotacao_esquerdaRB(T, x->pai);
                 x = T->raiz;
             }
         } else {
@@ -191,7 +191,7 @@ void remover_corrigir(arvore *T, no *x) {
             if (w->cor == 1) {
                 w->cor = 0;
                 x->pai->cor = 1;
-                rotacao_direita(T, x->pai);
+                rotacao_direitaRB(T, x->pai);
                 w = x->pai->esq;
             }
             if (w->dir->cor == 0 && w->esq->cor == 0) {
@@ -201,13 +201,13 @@ void remover_corrigir(arvore *T, no *x) {
                 if (w->esq->cor == 0) {
                     w->dir->cor = 0;
                     w->cor = 1;
-                    rotacao_esquerda(T, w);
+                    rotacao_esquerdaRB(T, w);
                     w = x->pai->esq;
                 }
                 w->cor = x->pai->cor;
                 x->pai->cor = 0;
                 w->esq->cor = 0;
-                rotacao_direita(T, x->pai);
+                rotacao_direitaRB(T, x->pai);
                 x = T->raiz;
             }
         }
@@ -216,31 +216,31 @@ void remover_corrigir(arvore *T, no *x) {
 }
 
 
-void inorder(arvore *T, no *x) {
+void inorderRB(arvore *T, no *x) {
     if (x != NULL) {
-        inorder(T, x->esq);
-        printf("%d - %d | ", x->chave,x->cor);
+        inorderRB(T, x->esq);
+        printf("%d - %d | ", x->estado,x->cor);
         
         
-        inorder(T, x->dir);
+        inorderRB(T, x->dir);
     }
 }
 
 
-void preorder(arvore *T, no *x) {
+void preorderRB(arvore *T, no *x) {
     if (x != NULL) {
-        printf("%d - %d | ", x->chave,x->cor);
-        preorder(T, x->esq);
+        printf("%d - %d | ", x->estado,x->cor);
+        preorderRB(T, x->esq);
         
-        preorder(T, x->dir);
+        preorderRB(T, x->dir);
     }
 }
 
-void posorder(arvore *T, no *x) {
+void posorderRB(arvore *T, no *x) {
     if (x != NULL) {
-        posorder(T, x->dir);
-        posorder(T, x->esq);
-        printf("%d - %d | ", x->chave,x->cor);
+        posorderRB(T, x->dir);
+        posorderRB(T, x->esq);
+        printf("%d - %d | ", x->estado,x->cor);
     
         
     }

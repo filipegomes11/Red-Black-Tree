@@ -3,30 +3,29 @@
 #include <stdlib.h>
 
 typedef struct no {
-    int chave;
+    char *estado;
     int cor;
     struct no *esq;
     struct no *dir;
     struct no *pai;
+    int indice;
 } no;
 
 typedef struct arvore {
     no *raiz;
 } arvore;
 
-void rotacao_esquerda(arvore *T, no *x);
-void rotacao_direita(arvore *T, no *x);
-void inserir(arvore *T, int a);
-void inserir_corrigir(arvore *T, no *z);
-void transplant(arvore *T, no *u, no *v);
-no *minimo(no *x);
-void remover(arvore *T, no *z);
-void remover_corrigir(arvore *T, no *x);
-void rotacao_esquerda(arvore *T, no *x);
-void rotacao_direita(arvore *T, no *x);
-void preorder(arvore *T, no *x);
-void inorder(arvore *T, no *x);
-void posorder(arvore *T, no *x);
+void rotacao_esquerdaRB(arvore *T, no *x);
+void rotacao_direitaRB(arvore *T, no *x);
+void inserirRB(arvore *T, int a);
+void inserirRB_corrigir(arvore *T, no *z);
+void transplantRB(arvore *T, no *u, no *v);
+no *minimoRB(no *x);
+void removerRB(arvore *T, no *z);
+void removerRB_corrigir(arvore *T, no *x);
+void preorderRB(arvore *T, no *x);
+void inorderRB(arvore *T, no *x);
+void posorderRB(arvore *T, no *x);
 
 
 
